@@ -1,0 +1,22 @@
+{
+  "name": "rpi_client_audio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "gegeraptor",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx babel-node ./src/index.js",
+    "build": "babel src/ --out-dir dist/",
+    "serve": "node ./dist/index.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/preset-env": "^7.5.5"
+  },
+  "dependencies": {
+    "mqtt": "^3.0.0"
+  }
+}
