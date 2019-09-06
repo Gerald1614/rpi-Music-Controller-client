@@ -1,9 +1,9 @@
 
 import { connect } from 'mqtt'
 
-const client = connect('mqtt://localhost');
+const client = connect('mqtt://mqtt');
 client.on('connect', () => {
-  const radio = { "action": "play", "channel": "http://icestreaming.rai.it/2.mp3"}
+  const radio = { "action": "play", "channel": 0}
   client.publish('radio_action', JSON.stringify(radio))
   console.log(radio)
   
@@ -14,7 +14,7 @@ client.on('connect', () => {
   },15000)
 
   setTimeout( async () => { 
-    const radio = { "action": "volume", "channel":0.8}
+    const radio = { "action": "volume", "channel":0.6}
     client.publish('radio_action', JSON.stringify(radio))
     console.log(radio)
   },30000)
