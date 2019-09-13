@@ -2,9 +2,13 @@ import Pigpio from 'pigpio'
 import { connect } from 'mqtt'
 
 const Gpio = Pigpio.Gpio
+Pigpio.initialize()
+
 const led = new Gpio(18, {mode: Gpio.OUTPUT});
 
 const client = connect('mqtt://mqtt');
+
+export const initLed = () => led.digitalWrite(0)
 
 client.on('connect', () => {
   console.log("connected to MQTT")
