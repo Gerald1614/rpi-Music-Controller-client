@@ -1,5 +1,6 @@
 import Pigpio from 'pigpio'
 import { eventStream } from './index.js'
+import { LED } from './streamRadio'
 
 const Gpio = Pigpio.Gpio
 Pigpio.initialize()
@@ -10,15 +11,7 @@ const trigger = new Gpio(23, {mode: Gpio.OUTPUT});
 const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
 trigger.digitalWrite(0); // Make sure trigger is low
 let stop = []
-
-
-// eventStream.on('listenSR04', (action) => {
-//   console.log(action)
-//   if (action == "start") {
-//     sensorOn = true
-//     watchHCSR04()
-//   }
-// })
+let deviance = 0
 
 export const watchHCSR04 = () => {
   echo.enableAlert()
@@ -34,21 +27,11 @@ export const watchHCSR04 = () => {
       if (stop.length > 3) {
         stop.shift()
         console.log("array " +stop)
-        let deviance = stop.reduce((a,b) => a+b) /3
+        deviance = stop.reduce((a,b) => a+b) /3
         console.log("Deviance " + deviance)
-        if (stop[2] <=50) {
-          if (deviance -0.5 < stop[0] && deviance +0.5 > stop[0]) {
-            console.log("stoping streaming")
-            echo.disableAlert()
-            eventStream.emit('stopStream', "stop")
-            // stop = []
-          } else if (Math.abs(stop[2] - stop[1]) >=4 && Math.abs(stop[2] - stop[1]) <=60) {
-            let changeVolume = (stop[2] - stop[1]) /50
-            eventStream.emit('changeVolume', changeVolume)
-            // stop = []
-          } 
+        if (stop[2] <=50 && stop[2] != stop[1]) {
+          userAction()
         }
-
       }
     }
   });
@@ -56,6 +39,34 @@ export const watchHCSR04 = () => {
  
 
 // Trigger a distance measurement once per second
-    setInterval(() => trigger.trigger(10, 1), 1000);
+  setInterval(() => trigger.trigger(10, 1), 1000);
 
+  const userAction = () => {
+    blinkLED()
+    if (deviance -0.5 < stop[0] && deviance +0.5 > stop[0]) {
+      console.log("stoping streaming")
+      echo.disableAlert()
+      endBlink()
+      eventStream.emit('stopStream', "stop")
+    } else if (Math.abs(stop[2] - stop[1]) >=4 && Math.abs(stop[2] - stop[1]) <=60) {
+      let changeVolume = (stop[2] - stop[1]) /50
+      endBlink()
+      eventStream.emit('changeVolume', changeVolume)
+    } 
+  }
 
+let blinkInterval = setInterval(blinkLED, 750); //run the blinkLED function every 250ms
+
+function blinkLED() { //function to start blinking
+  if (LED.digitalRead() === 0) { //check the pin state, if the state is 0 (or off)
+    LED.digitalWrite(1); //set pin state to 1 (turn LED on)
+  } else {
+    LED.digitalWrite(0); //set pin state to 0 (turn LED off)
+  }
+}
+
+export const endBlink= () => { //function to stop blinking
+  clearInterval(blinkInterval); // Stop blink intervals
+  LED.digitalWrite(0); // Turn LED off
+  // LED.unexport(); // Unexport GPIO to free resources
+}
