@@ -49,7 +49,9 @@ async function cardDetect () {
   console.log('Card detected, UID ' + uidToString(uid));
   await mfrc522.resetPCD()
   setTimeout(reLoop, 8000);
-  eventStream.emit('newStream', uidToString(uid))
+  if (uidToString(uid) == "24af8f63") {
+    eventStream.emit('meteo')
+  } else eventStream.emit('newStream', uidToString(uid))
 }
  
  

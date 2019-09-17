@@ -12,6 +12,7 @@ const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
 trigger.digitalWrite(0); // Make sure trigger is low
 let stop = []
 let deviance = 0
+let i=0
 
 export const watchHCSR04 = () => {
   echo.enableAlert()
@@ -23,16 +24,20 @@ export const watchHCSR04 = () => {
       const endTick = tick;
       const diff = (endTick >> 0) - (startTick >> 0); // Unsigned 32 bit arithmetic
       const dist = diff / 2 / MICROSECONDS_PER_CM
-      stop.push(dist)
-      if (stop.length > 3) {
-        stop.shift()
-        console.log("array " +stop)
-        deviance = stop.reduce((a,b) => a+b) /3
-        console.log("Deviance " + deviance)
-        if (stop[2] <=50 && stop[2] != stop[1]) {
-          userAction()
-        }
+      if (dist <= 80) {
+        blinkLED()
+        userAction(dist)
       }
+      // stop.push(dist)
+      // if (stop.length > 3) {
+      //   stop.shift()
+      //   console.log("array " +stop)
+      //   deviance = stop.reduce((a,b) => a+b) /3
+      //   console.log("Deviance " + deviance)
+      //   if (stop[2] <=50 && stop[2] != stop[1]) {
+      //     userAction()
+      //   }
+      // }
     }
   });
 };
@@ -41,21 +46,44 @@ export const watchHCSR04 = () => {
 // Trigger a distance measurement once per second
   setInterval(() => trigger.trigger(10, 1), 1000);
 
-  const userAction = () => {
-    blinkLED()
-    if (deviance -0.5 < stop[0] && deviance +0.5 > stop[0]) {
-      console.log("stoping streaming")
-      echo.disableAlert()
-      endBlink()
-      eventStream.emit('stopStream', "stop")
-    } else if (Math.abs(stop[2] - stop[1]) >=4 && Math.abs(stop[2] - stop[1]) <=60) {
-      let changeVolume = (stop[2] - stop[1]) /50
-      endBlink()
-      eventStream.emit('changeVolume', changeVolume)
-    } 
+  const userAction = (dist) => {
+    i++
+    if (i == 1 || i == 4) {
+      stop.push(dist)
+    }
+    if (stop.length == 2) {
+      if (Math.ceil(stop[0]) == Math.ceil(stop[1]) ) {
+        console.log("stoping streaming")
+        echo.disableAlert()
+        endBlink()
+        eventStream.emit('stopStream', "stop")
+        stop=[]
+      } else {
+        let changeVolume = (stop[1] - stop[0]) /50
+        endBlink()
+        eventStream.emit('changeVolume', changeVolume)
+        LED.digitalWrite(1)
+        stop=[]
+      }
+      i=0
+    }
   }
 
-let blinkInterval = setInterval(blinkLED, 750); //run the blinkLED function every 250ms
+  // const userAction = () => {
+  //   blinkLED()
+  //   if (deviance -0.5 < stop[0] && deviance +0.5 > stop[0]) {
+  //     console.log("stoping streaming")
+  //     echo.disableAlert()
+  //     endBlink()
+  //     eventStream.emit('stopStream', "stop")
+  //   } else if (Math.abs(stop[2] - stop[1]) >=4 && Math.abs(stop[2] - stop[1]) <=60) {
+  //     let changeVolume = (stop[2] - stop[1]) /50
+  //     endBlink()
+  //     eventStream.emit('changeVolume', changeVolume)
+  //   } 
+  // }
+
+let blinkInterval = setInterval(blinkLED, 250); //run the blinkLED function every 250ms
 
 function blinkLED() { //function to start blinking
   if (LED.digitalRead() === 0) { //check the pin state, if the state is 0 (or off)

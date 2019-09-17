@@ -1,14 +1,15 @@
 import Pigpio from 'pigpio'
 import { connect } from 'mqtt'
+import { endBlink } from './ultraSensor'
 
 const Gpio = Pigpio.Gpio
 Pigpio.initialize()
 
-const led = new Gpio(18, {mode: Gpio.OUTPUT});
+export const LED = new Gpio(18, {mode: Gpio.OUTPUT});
 
 const client = connect('mqtt://mqtt');
 
-export const initLed = () => led.digitalWrite(0)
+export const initLed = () => LED.digitalWrite(0)
 
 client.on('connect', () => {
   console.log("connected to MQTT")
@@ -16,14 +17,15 @@ client.on('connect', () => {
 export const playStream = (channel) =>{
     const radio = { "action": "play", "desc": channel}
     client.publish('radio_action', JSON.stringify(radio))
-    led.digitalWrite(1)
+    endBlink()
+    LED.digitalWrite(1)
     console.log(radio)
 }
 
 export const stopStream = ()=> {
     const radio = { "action": "stop"}
     client.publish('radio_action', JSON.stringify(radio))
-    led.digitalWrite(0)
+    LED.digitalWrite(0)
     console.log(radio)
 }
 export const volume = (volume)=> {
