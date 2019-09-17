@@ -19,6 +19,7 @@
   "dependencies": {
     "pigpio": "^2.0.0",
     "express": "^4.0.0",
+    "node-fetch": "^2.6.0",
     "rpi-mfrc522": "^1.0.0",
     "mqtt": "^3.0.0",
     "@google-cloud/text-to-speech": "^1.2.0"

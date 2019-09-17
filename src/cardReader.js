@@ -51,7 +51,7 @@ async function cardDetect () {
   setTimeout(reLoop, 8000);
   if (uidToString(uid) == "24af8f63") {
     eventStream.emit('meteo')
-  } else eventStream.emit('newStream', uidToString(uid))
+  } else { eventStream.emit('newStream', uidToString(uid)) }
 }
  
  

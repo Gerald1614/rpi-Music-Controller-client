@@ -11,7 +11,7 @@ export async function main(text) {
   const request = {
     input: {text: text},
     // Select the language and SSML Voice Gender (optional)
-    voice: {languageCode: 'fr-CA', ssmlGender: 'FEMALE'},
+    voice: {languageCode: 'en-gb', ssmlGender: 'FEMALE'},
     // Select the type of audio encoding
     audioConfig: {audioEncoding: 'MP3'},
   };

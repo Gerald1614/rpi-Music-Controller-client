@@ -5,6 +5,7 @@ import { cardReader } from './cardReader.js'
 import { volume, stopStream, playStream, initLed } from './streamRadio.js'
 import { watchHCSR04 } from "./ultraSensor.js"
 import { main } from './text2speech'
+import currentweather from './weather.js'
 
 const app = express()
 let currentSong =""
@@ -36,13 +37,24 @@ eventStream.on('newStream', (cardUid) => {
 
 eventStream.on('meteo', () => {
   console.log("bulletin meteo")
-  if(currentSong !="")
-    stopStream()
-    main("la température est de 9 degrés")
-    .then(() =>{
-      playStream(`http://${HOST}:5000/output.mp3`)
+ 
+    volume(volumeValue-0.1)
+    getMeteo()
+    .then((bulletinMeteo) => {
+      console.log(bulletinMeteo)
+      stopStream()
+      main(bulletinMeteo)
+      .then(() =>{
+        volume(volumeValue+0.1)
+        playStream(`http://${HOST}:5000/output.mp3`)
+      })
+      .then(() => {
+        if(currentSong !="") {
+          playStream(currentSong)
+        }
+      })
     })
-    .then(() => playStream(currentSong))
+   
     
 })
 
@@ -58,4 +70,10 @@ eventStream.on('changeVolume', (change) => {
   }
 
 })
+const getMeteo = () => {
+  return currentweather.getCurrentWeather()
+  .then((result) => {
+    return `Current temperature is ${result.main.temp} degrees, ${result.weather[0].description}, expecting temperature between ${result.main.temp_min} and ${result.main.temp_max}`
+  })
+}
 
