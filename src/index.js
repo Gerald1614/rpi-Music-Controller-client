@@ -6,6 +6,7 @@ import { volume, stopStream, playStream, initLed } from './streamRadio.js'
 import { watchHCSR04 } from "./ultraSensor.js"
 import { main } from './text2speech'
 import currentweather from './weather.js'
+import { sensor } from './bme280Sensor'
 
 const app = express()
 let currentSong =""
@@ -70,10 +71,18 @@ eventStream.on('changeVolume', (change) => {
   }
 
 })
-const getMeteo = () => {
-  return currentweather.getCurrentWeather()
-  .then((result) => {
-    return `Current temperature is ${result.main.temp} degrees, ${result.weather[0].description}, expecting temperature between ${result.main.temp_min} and ${result.main.temp_max}`
-  })
+const getMeteo = async() => {
+  const tempExt = await currentweather.getCurrentWeather()
+  const tempInt = await sensor()
+  console.log(tempInt)
+
+  return Promise.all([tempExt, tempInt])
+    .then(function(result) {
+    return `Current temperature is ${result[1].temperature_C.toFixed(1)} degrees inside and ${result[0].main.temp} degrees outside, expecting temperature between ${result[0].main.temp_min} and ${result[0].main.temp_max} degrees. ${result[0].weather[0].description} with pressure of ${Math.round(result[1].pressure_hPa)}`
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+   
 }
 

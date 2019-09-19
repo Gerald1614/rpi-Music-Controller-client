@@ -11,7 +11,6 @@ const trigger = new Gpio(23, {mode: Gpio.OUTPUT});
 const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
 trigger.digitalWrite(0); // Make sure trigger is low
 let stop = []
-let deviance = 0
 let i=0
 
 export const watchHCSR04 = () => {
@@ -28,16 +27,6 @@ export const watchHCSR04 = () => {
         blinkLED()
         userAction(dist)
       }
-      // stop.push(dist)
-      // if (stop.length > 3) {
-      //   stop.shift()
-      //   console.log("array " +stop)
-      //   deviance = stop.reduce((a,b) => a+b) /3
-      //   console.log("Deviance " + deviance)
-      //   if (stop[2] <=50 && stop[2] != stop[1]) {
-      //     userAction()
-      //   }
-      // }
     }
   });
 };
@@ -68,20 +57,6 @@ export const watchHCSR04 = () => {
       i=0
     }
   }
-
-  // const userAction = () => {
-  //   blinkLED()
-  //   if (deviance -0.5 < stop[0] && deviance +0.5 > stop[0]) {
-  //     console.log("stoping streaming")
-  //     echo.disableAlert()
-  //     endBlink()
-  //     eventStream.emit('stopStream', "stop")
-  //   } else if (Math.abs(stop[2] - stop[1]) >=4 && Math.abs(stop[2] - stop[1]) <=60) {
-  //     let changeVolume = (stop[2] - stop[1]) /50
-  //     endBlink()
-  //     eventStream.emit('changeVolume', changeVolume)
-  //   } 
-  // }
 
 let blinkInterval = setInterval(blinkLED, 250); //run the blinkLED function every 250ms
 

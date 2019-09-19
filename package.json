@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "pigpio": "^2.0.0",
+    "i2c-bus": "^5.0.0",
     "express": "^4.0.0",
     "node-fetch": "^2.6.0",
     "rpi-mfrc522": "^1.0.0",
