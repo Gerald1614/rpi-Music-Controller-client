@@ -35,6 +35,8 @@ I associated a specific channel to each RFID card. As soon as you present a card
 For volume, I am calculating distance between 2 cycles of distance measurement of the HC_SR04 sensor. if the distance decreases, then I reduce the volume and vice-versa. if the hand is not at less than 80cm of the captor and distance is teh same between 2 cycles, then the music is stopped.
 For the meteo, it is triggered by another RFID tag. when exposed to the reader, I used fecth to get data coming from openweathermap API. I consolidate this json with data collected on my BME280 sensor (temperature and pressure).  I then build a text file that I send to Google Text-to-Speech API who send me back a mp3 file that I store on the RPI. In order to get pychromecast to read this mp3, I had to expose it through a server, so I used express to expose this mp3 file through http that I just pass to the streaming platform.  I then send a new command to play agian the channel that was previously played. for that, I had to tune the code in pyhton to adjust the length of the meto message as in fact pychromecast was not waitign for its end before starting the next one. so i used a function to collect the lenght of the message and create a temporisation of this exact same timing. 
 
+Because I was using express to present the mp3 file for the meteo, I decided to write a small UI to drive all the features from an HTML file. I am using socket.io to generate messages from the HTML pasge to the server
+
 ## Installation
 
 The docker compose file that is used to deploy an drun the three tier is in the folder of the server project. please make sure those two tiers (the backend and this client) are copied in the same folder. 

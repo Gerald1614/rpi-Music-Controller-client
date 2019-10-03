@@ -1,6 +1,9 @@
 import events from 'events'
 import express from 'express'
-import { channels } from './channels.js'
+import IO from 'socket.io'
+import HTTP from 'http'
+import path from 'path'
+import channels from './public/channels.json'
 import { cardReader } from './cardReader.js'
 import { volume, stopStream, playStream, initLed } from './streamRadio.js'
 import { watchHCSR04 } from "./ultraSensor.js"
@@ -9,10 +12,39 @@ import currentweather from './weather.js'
 import { sensor } from './bme280Sensor'
 
 const app = express()
+const http = HTTP.createServer(app)
+const io = IO(http)
 let currentSong =""
 
 app.use(express.static('appdata'));
-app.listen(5000, function () {
+app.use("/public", express.static(__dirname + "/public"));
+app.get('/meteo',function(req,res) {
+  res.sendFile(path.join(__dirname+'/index.html'));
+});
+
+io.on('connection', function(socket){
+  socket.on('playUI', ((stream) => {
+    currentSong = stream
+    playStream(stream)
+    watchHCSR04()
+  }));
+  socket.on('stopUI', (() => {
+    currentSong=""
+    stopStream()
+  }));
+  socket.on('volumeUI', ((vol) => {
+    volume(vol)
+  }));
+  socket.on('meteoUI', (() => {
+    getMeteo()
+    .then((bulletinMeteo) => {
+      io.emit('bulletinMeteo', bulletinMeteo)
+    })
+  }));
+
+});
+
+http.listen(5000, function () {
   console.log('express serving files on 5000')
 })
 
@@ -61,15 +93,11 @@ eventStream.on('meteo', () => {
 
 eventStream.on('stopStream', () => {
   currentSong=""
-    stopStream()
+  stopStream()
 })
-eventStream.on('changeVolume', (change) => {
-  volumeValue += change
-  if (volumeValue >=0 || volumeValue <=1) {
-    console.log("change volume by " + change)
-    volume(volumeValue)
-  }
-
+eventStream.on('changeVolume', (newVolume) => {
+    console.log("change volume to " + newVolume)
+    volume(newVolume)
 })
 const getMeteo = async() => {
   const tempExt = await currentweather.getCurrentWeather()

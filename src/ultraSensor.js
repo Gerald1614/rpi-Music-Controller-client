@@ -10,7 +10,7 @@ const MICROSECONDS_PER_CM = 1e6/34321;
 const trigger = new Gpio(23, {mode: Gpio.OUTPUT});
 const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
 trigger.digitalWrite(0); // Make sure trigger is low
-let stop = []
+let interval = []
 let i=0
 
 export const watchHCSR04 = () => {
@@ -26,36 +26,32 @@ export const watchHCSR04 = () => {
       if (dist <= 80) {
         blinkLED()
         userAction(dist)
+      } else  {
+        LED.digitalWrite(1)
       }
     }
   });
 };
  
-
 // Trigger a distance measurement once per second
   setInterval(() => trigger.trigger(10, 1), 1000);
 
   const userAction = (dist) => {
-    i++
-    if (i == 1 || i == 4) {
-      stop.push(dist)
-    }
-    if (stop.length == 2) {
-      if (Math.ceil(stop[0]) == Math.ceil(stop[1]) ) {
-        console.log("stoping streaming")
+    let changeVolume = dist /80
+    endBlink()
+    eventStream.emit('changeVolume', changeVolume)
+    interval.push(dist)
+    if (interval.length == 3) {
+      if (Math.ceil(interval[0]) == Math.ceil(interval[2]) ) {
+        console.log("stop streaming")
         echo.disableAlert()
         endBlink()
         eventStream.emit('stopStream', "stop")
-        stop=[]
-      } else {
-        let changeVolume = (stop[1] - stop[0]) /50
-        endBlink()
-        eventStream.emit('changeVolume', changeVolume)
-        LED.digitalWrite(1)
-        stop=[]
+        LED.digitalWrite(0); // Turn LED off
       }
-      i=0
+      interval.shift()
     }
+ 
   }
 
 let blinkInterval = setInterval(blinkLED, 250); //run the blinkLED function every 250ms
@@ -70,6 +66,5 @@ function blinkLED() { //function to start blinking
 
 export const endBlink= () => { //function to stop blinking
   clearInterval(blinkInterval); // Stop blink intervals
-  LED.digitalWrite(0); // Turn LED off
   // LED.unexport(); // Unexport GPIO to free resources
 }
