@@ -1,5 +1,16 @@
 
-var socket = io();
+const socket = io();
+
+socket.on('logs', function (data) {
+  console.log(data)
+  let list = document.querySelector("#logs");
+    let listItem = document.createElement("li");
+    listItem.appendChild(document.createTextNode(data));
+    list.insertBefore(listItem, list.childNodes[0]);
+    if (list.childNodes[4]) {
+      list.removeChild(list.childNodes[4])
+    }
+})
 
 function getMeteo() {
   socket.emit('meteoUI')

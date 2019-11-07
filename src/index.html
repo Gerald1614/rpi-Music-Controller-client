@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Title of the document</title>
+  <title>Music&Meteo</title>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/public/myScript.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js" ></script>
@@ -24,14 +24,18 @@
             <button class="button" onclick="stopMusic()">Stop music</button>
         </p>
     </div>
-      
   </div>
   <div class="split left">
     <div class="centered">
+        <h2>Channels</h2>
         <ul id="channels"></ul>
     </div>
-
   </div>
+  <footer>
+    <h2>Logs</h2>
+    <ol id="logs"></ol>
+  </footer>
+
 </body>
 <style>
   body {
@@ -39,41 +43,64 @@
     color: #34495e;
     margin:50px;
   }
+  footer {
+    position: absolute;
+    min-height: 200px;
+    bottom: 0;
+    left: 50px;
+  }
   ul {
     border-left: 5px solid red;
     background-color: #f1f1f1;
     list-style-type: none;
+    font-weight: bold;
     padding: 10px 20px;
     width: 300px
   }
-  li {
-    font-weight: bold;
+
+  ol {
+    border-left: 5px solid red;
+    background-color: #f1f1f1;
+    list-style-type: none;
     padding: 10px 20px;
+    width: 500px
   }
 
+  ul > li {
+    font-size: 18px;
+    margin: 10px
+  }
+
+  ol > li {
+    font-size: 12px;
+  }
+  
+  #channels {
+    cursor: pointer;
+  }
   .button {
-  background-color: #34495e; /* Green */
-  border: 2px solid red;
-  border-radius: 2px;
-  color: white;
-  padding: 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-}
+    background-color: #34495e; /* Green */
+    border: 2px solid red;
+    border-radius: 2px;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
 
   .split {
-  height: 40%;
-  width: 50%;
-  position: fixed;
-  z-index: 1;
-  top: 20%;
-  overflow-x: hidden;
-  padding-top: 20px;
-}
+    height: 40%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 20%;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
 
 /* Control the left side */
 .left {

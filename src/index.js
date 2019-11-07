@@ -3,6 +3,7 @@ import express from 'express'
 import IO from 'socket.io'
 import HTTP from 'http'
 import path from 'path'
+import { connect } from 'mqtt'
 import channels from './public/channels.json'
 import { cardReader } from './cardReader.js'
 import { volume, stopStream, playStream, initLed } from './streamRadio.js'
@@ -21,6 +22,17 @@ app.use("/public", express.static(__dirname + "/public"));
 app.get('/meteo',function(req,res) {
   res.sendFile(path.join(__dirname+'/index.html'));
 });
+
+
+const client = connect('mqtt://mqtt');
+client.on('connect', () => {
+  client.subscribe('radio_action')
+})
+client.on('message', (topic, message) => {
+  if(topic === 'radio_action' || topic === 'logs') {
+      io.emit('logs', message.toString())
+  }
+})
 
 io.on('connection', function(socket){
   socket.on('playUI', ((stream) => {
@@ -41,7 +53,6 @@ io.on('connection', function(socket){
       io.emit('bulletinMeteo', bulletinMeteo)
     })
   }));
-
 });
 
 http.listen(5000, function () {

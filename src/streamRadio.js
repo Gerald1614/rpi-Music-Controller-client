@@ -19,18 +19,15 @@ export const playStream = (channel) =>{
     client.publish('radio_action', JSON.stringify(radio))
     endBlink()
     LED.digitalWrite(1)
-    console.log(radio)
 }
 
 export const stopStream = ()=> {
     const radio = { "action": "stop"}
     client.publish('radio_action', JSON.stringify(radio))
     LED.digitalWrite(0)
-    console.log(radio)
 }
 export const volume = (volume)=> {
     const radio = { "action": "volume", "desc":volume}
     client.publish('radio_action', JSON.stringify(radio))
-    console.log(radio)
 }
 

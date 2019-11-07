@@ -43,7 +43,6 @@ export const watchHCSR04 = () => {
     interval.push(dist)
     if (interval.length == 3) {
       if (Math.ceil(interval[0]) == Math.ceil(interval[2]) ) {
-        console.log("stop streaming")
         echo.disableAlert()
         endBlink()
         eventStream.emit('stopStream', "stop")
