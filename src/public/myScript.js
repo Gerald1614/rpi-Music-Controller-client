@@ -7,8 +7,16 @@ socket.on('logs', function (data) {
     let listItem = document.createElement("li");
     listItem.appendChild(document.createTextNode(data));
     list.insertBefore(listItem, list.childNodes[0]);
-    if (list.childNodes[4]) {
-      list.removeChild(list.childNodes[4])
+    if (list.childNodes[5]) {
+      list.removeChild(list.childNodes[5])
+    }
+    const action = JSON.parse(data)
+    if (action.action =="volume") {
+      let target = document.querySelector(".value");
+      let elem = document.querySelector(".volumeSlider");
+      let vol = Math.round(action.desc*10)
+      target.innerHTML = "volume : " + vol;
+      elem.value = vol
     }
 })
 
@@ -57,7 +65,7 @@ window.onload=function(){
 let rangeValue = function(){
   let newValue = elem.value;
   let target = document.querySelector(".value");
-  target.innerHTML = "volume " + newValue;
+  target.innerHTML = "volume : " + newValue;
   socket.emit('volumeUI', newValue/10)
 }
   elem.addEventListener("input", rangeValue);

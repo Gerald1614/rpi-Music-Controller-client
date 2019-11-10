@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music&Meteo</title>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/public/myScript.js"></script>
@@ -16,37 +17,34 @@
     <button class="button" onclick="getMeteo()">Get Meteo</button>
     <p id="meteo" style='text-align: center'></p>
   </p>
-  <div class="split right">
-    <div class="centered">
-        <div class="value">volume 5</div>
-        <input type="range" class="volumeSlider" min="0" max="10" step="1" value="5">
-        <p>
-            <button class="button" onclick="stopMusic()">Stop music</button>
-        </p>
-    </div>
+  <div class="left">
+    <h2>Channels</h2>
+    <ul id="channels"></ul>
   </div>
-  <div class="split left">
-    <div class="centered">
-        <h2>Channels</h2>
-        <ul id="channels"></ul>
-    </div>
+  <div class="right">
+    <div class="value">volume 5</div>
+    <input type="range" class="volumeSlider" min="0" max="10" step="1" value="5">
+    <p>
+        <button class="button" onclick="stopMusic()">Stop music</button>
+    </p>
   </div>
-  <footer>
-    <h2>Logs</h2>
+  <div class="bottom">
+    <div>
+      <h2>Logs</h2>
+    </div>
     <ol id="logs"></ol>
-  </footer>
+  </div>
 
 </body>
 <style>
   body {
     font-family: "Dosis", Helvetica, Arial, sans-serif; 
     color: #34495e;
-    margin:50px;
+    margin:20px;
   }
-  footer {
-    position: absolute;
-    min-height: 200px;
-    bottom: 0;
+  .bottom {
+    display: inline-flex;
+    height: 140px;
     left: 50px;
   }
   ul {
@@ -63,6 +61,7 @@
     background-color: #f1f1f1;
     list-style-type: none;
     padding: 10px 20px;
+    margin-left: 10px;
     width: 500px
   }
 
@@ -92,38 +91,35 @@
     cursor: pointer;
   }
 
-  .split {
-    height: 40%;
-    width: 50%;
-    position: fixed;
-    z-index: 1;
-    top: 20%;
-    overflow-x: hidden;
-    padding-top: 20px;
-  }
-
 /* Control the left side */
 .left {
-  left: 0px;
+  box-sizing:border-box;
+  padding:20px;
+  float:left;
+  width:45%;
 }
 
 /* Control the right side */
 .right {
-  right: 0px;
+  box-sizing:border-box;
+  padding:20px;
+  float:left;
+  width:45%;
+  text-align:center;
 }
-.centered {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+
+/* Use a media query to add a break point at 800px: */
+@media screen and (max-width:800px) {
+  .left, .right {
+    width:100%; /* The width is 100%, when the viewport is 800px or smaller */
+  }
 }
 
 .value {
   border-bottom: 4px dashed #bdc3c7;
   text-align: center;
   font-weight: bold;
-  font-size: 4em;
+  font-size: 3em;
   width: 300px; 
   height: 80px;
   line-height: 60px;
