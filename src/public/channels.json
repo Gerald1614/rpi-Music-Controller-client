@@ -5,5 +5,7 @@
   { "stream": "http://direct.franceinter.fr/live/franceinter-midfi.mp3", "name": "France Inter", "cardUid": "20f517a8" },
   { "stream": "http://streaming.radio.rtl2.fr/rtl2-1-48-192", "name": "RTL2", "cardUid": "00cc16a8" },
   { "stream": " http://icecast.cogecomedia.com:8000/ckoi-lo.aac", "name": "CKOI", "cardUid": "70461ca8" },
-  { "stream": "http://17533.live.streamtheworld.com:3690/CKMFFMAAC_SC", "name": "Energie", "cardUid": "40ae20a8" }
+  { "stream": "http://17533.live.streamtheworld.com:3690/CKMFFMAAC_SC", "name": "Energie", "cardUid": "40ae20a8" },
+  { "stream": "http://cogecomedia.leanstream.co/CFGLFM-MP3", "name": "Rythme FM", "cardUid": "" },
+  { "stream": "http://15243.live.streamtheworld.com:443/CJFMFMAAC_SC", "name": "Virgin Montreal", "cardUid": "" }
 ]

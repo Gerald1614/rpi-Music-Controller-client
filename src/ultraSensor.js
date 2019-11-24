@@ -12,8 +12,11 @@ const echo = new Gpio(24, {mode: Gpio.INPUT, alert: true});
 trigger.digitalWrite(0); // Make sure trigger is low
 let i=0
 
-export const watchHCSR04 = () => {
-  echo.enableAlert()
+export const watchHCSR04 = (sensorDisabled) => {
+  if (sensorDisabled) {
+    echo.disableAlert()
+  } else echo.enableAlert()
+  
   let startTick;
   echo.on('alert', (level, tick) => {
     if (level == 1) {

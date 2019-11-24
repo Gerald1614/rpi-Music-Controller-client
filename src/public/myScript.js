@@ -20,6 +20,11 @@ socket.on('logs', function (data) {
     }
 })
 
+function disableSensor() {
+  let sensorDisabled = document.getElementById("disableSensor")
+    socket.emit('disableSensor', sensorDisabled.checked)
+}
+
 function getMeteo() {
   socket.emit('meteoUI')
   socket.on('bulletinMeteo', (bulletin) => {

@@ -38,7 +38,9 @@ io.on('connection', function(socket){
   socket.on('playUI', ((stream) => {
     currentSong = stream
     playStream(stream)
-    watchHCSR04()
+  }));
+  socket.on('disableSensor', ((sensorDisabled) => {
+    watchHCSR04(sensorDisabled)
   }));
   socket.on('stopUI', (() => {
     currentSong=""
@@ -76,7 +78,7 @@ eventStream.on('newStream', (cardUid) => {
   if(chId !=undefined)
   currentSong = channels[chId].stream
     playStream(currentSong)
-    watchHCSR04()
+    // watchHCSR04()
 })
 
 eventStream.on('meteo', () => {
