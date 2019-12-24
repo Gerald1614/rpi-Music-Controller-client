@@ -53,6 +53,7 @@ io.on('connection', function(socket){
     getMeteo()
     .then((bulletinMeteo) => {
       io.emit('bulletinMeteo', bulletinMeteo)
+      castMeteo(bulletinMeteo)
     })
   }));
 });
@@ -82,12 +83,26 @@ eventStream.on('newStream', (cardUid) => {
 })
 
 eventStream.on('meteo', () => {
+  getMeteo()
+    .then((bulletinMeteo) => {
+      castMeteo(bulletinMeteo)
+    })
+})
+
+eventStream.on('stopStream', () => {
+  currentSong=""
+  stopStream()
+})
+eventStream.on('changeVolume', (newVolume) => {
+    console.log("change volume to " + newVolume)
+    volume(newVolume)
+})
+
+const castMeteo = async(bulletinMeteo) => {
+
   console.log("bulletin meteo")
  
     volume(volumeValue-0.1)
-    getMeteo()
-    .then((bulletinMeteo) => {
-      console.log(bulletinMeteo)
       stopStream()
       main(bulletinMeteo)
       .then(() =>{
@@ -99,19 +114,7 @@ eventStream.on('meteo', () => {
           playStream(currentSong)
         }
       })
-    })
-   
-    
-})
-
-eventStream.on('stopStream', () => {
-  currentSong=""
-  stopStream()
-})
-eventStream.on('changeVolume', (newVolume) => {
-    console.log("change volume to " + newVolume)
-    volume(newVolume)
-})
+}
 const getMeteo = async() => {
   const tempExt = await currentweather.getCurrentWeather()
   const tempInt = await sensor()
@@ -119,7 +122,7 @@ const getMeteo = async() => {
 
   return Promise.all([tempExt, tempInt])
     .then(function(result) {
-    return `Current temperature is ${result[1].temperature_C.toFixed(1)} degrees inside and ${result[0].main.temp} degrees outside, expecting temperature between ${result[0].main.temp_min} and ${result[0].main.temp_max} degrees. ${result[0].weather[0].description} with pressure of ${Math.round(result[1].pressure_hPa)}`
+    return `Current temperature is ${result[1].temperature_C.toFixed(1)} degrees inside, humidity is ${Math.round(result[1].humidity)}. ${result[0].main.temp} degrees outside, expecting temperature between ${result[0].main.temp_min} and ${result[0].main.temp_max} degrees. ${result[0].weather[0].description} with pressure of ${Math.round(result[1].pressure_hPa)}`
     })
     .catch((err) => {
       console.log(err)
